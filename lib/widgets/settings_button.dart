@@ -10,7 +10,7 @@ class SettingsButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.router.popAndPush(SettingsRoute());
+        context.router.push(SettingsRoute());
       },
       child: SvgPicture.asset(
         'assets/images/elements/settings-button.svg', width: 50, height: 50,

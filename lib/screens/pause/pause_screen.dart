@@ -45,8 +45,7 @@ class _PauseScreenState extends State<PauseScreen> {
                   children: [
                     ActionButtonWidget(
                         onTap: () {
-                          context.router.popAndPush(GameRoute(level: widget.level));
-
+                          context.router.push(GameRoute(level: widget.level));
                         },
                         verticalPadding: 12,
                         horizontalPadding: 45,
@@ -56,7 +55,7 @@ class _PauseScreenState extends State<PauseScreen> {
                     SizedBox(height: 15),
                     ActionButtonWidget(
                         onTap: () {
-                          context.router.popAndPush(HomeRoute());
+                          context.router.push(HomeRoute());
                         },
                         verticalPadding: 12,
                         horizontalPadding: 50,

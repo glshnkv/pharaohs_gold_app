@@ -53,6 +53,26 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const SettingsScreen(),
       );
     },
+    TimeLeftRoute.name: (routeData) {
+      final args = routeData.argsAs<TimeLeftRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: TimeLeftScreen(
+          key: args.key,
+          level: args.level,
+        ),
+      );
+    },
+    WinRoute.name: (routeData) {
+      final args = routeData.argsAs<WinRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: WinScreen(
+          key: args.key,
+          level: args.level,
+        ),
+      );
+    },
   };
 }
 
@@ -170,4 +190,79 @@ class SettingsRoute extends PageRouteInfo<void> {
   static const String name = 'SettingsRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [TimeLeftScreen]
+class TimeLeftRoute extends PageRouteInfo<TimeLeftRouteArgs> {
+  TimeLeftRoute({
+    Key? key,
+    required LevelModel level,
+    List<PageRouteInfo>? children,
+  }) : super(
+          TimeLeftRoute.name,
+          args: TimeLeftRouteArgs(
+            key: key,
+            level: level,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'TimeLeftRoute';
+
+  static const PageInfo<TimeLeftRouteArgs> page =
+      PageInfo<TimeLeftRouteArgs>(name);
+}
+
+class TimeLeftRouteArgs {
+  const TimeLeftRouteArgs({
+    this.key,
+    required this.level,
+  });
+
+  final Key? key;
+
+  final LevelModel level;
+
+  @override
+  String toString() {
+    return 'TimeLeftRouteArgs{key: $key, level: $level}';
+  }
+}
+
+/// generated route for
+/// [WinScreen]
+class WinRoute extends PageRouteInfo<WinRouteArgs> {
+  WinRoute({
+    Key? key,
+    required LevelModel level,
+    List<PageRouteInfo>? children,
+  }) : super(
+          WinRoute.name,
+          args: WinRouteArgs(
+            key: key,
+            level: level,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'WinRoute';
+
+  static const PageInfo<WinRouteArgs> page = PageInfo<WinRouteArgs>(name);
+}
+
+class WinRouteArgs {
+  const WinRouteArgs({
+    this.key,
+    required this.level,
+  });
+
+  final Key? key;
+
+  final LevelModel level;
+
+  @override
+  String toString() {
+    return 'WinRouteArgs{key: $key, level: $level}';
+  }
 }

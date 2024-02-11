@@ -6,6 +6,8 @@ import 'package:pharaohs_gold_app/screens/home/home_screen.dart';
 import 'package:pharaohs_gold_app/screens/levels/levels_screen.dart';
 import 'package:pharaohs_gold_app/screens/pause/pause_screen.dart';
 import 'package:pharaohs_gold_app/screens/settings/settings_screen.dart';
+import 'package:pharaohs_gold_app/screens/time_left/time_left_screen.dart';
+import 'package:pharaohs_gold_app/screens/win/win_screen.dart';
 
 part 'router.gr.dart';
 
@@ -19,5 +21,8 @@ class AppRouter extends _$AppRouter {
     AutoRoute(page: SettingsRoute.page),
     AutoRoute(page: GameRoute.page),
     AutoRoute(page: PauseRoute.page),
+    AutoRoute(page: WinRoute.page),
+    AutoRoute(page: TimeLeftRoute.page),
+
   ];
 }

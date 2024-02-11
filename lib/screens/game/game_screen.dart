@@ -8,7 +8,6 @@ import 'package:pharaohs_gold_app/models/level_model.dart';
 import 'package:pharaohs_gold_app/repository/levels_repository.dart';
 import 'package:pharaohs_gold_app/router/router.dart';
 import 'package:pharaohs_gold_app/theme/colors.dart';
-import 'package:pharaohs_gold_app/widgets/action_button_widget.dart';
 import 'package:pharaohs_gold_app/widgets/menu_button.dart';
 
 @RoutePage()
@@ -22,8 +21,15 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  List<List<String>> board = List.generate(6, (i) => List.filled(11, ""));
   int startGameTime = DateTime.now().millisecondsSinceEpoch;
+
+  @override
+  void initState() {
+    super.initState();
+    initializeBoard();
+  }
+
+  List<List<String>> board = List.generate(6, (i) => List.filled(11, ""));
 
   int selectedRow = -1;
   int selectedColumn = -1;
@@ -42,12 +48,7 @@ class _GameScreenState extends State<GameScreen> {
   ];
 
   int coins = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    initializeBoard();
-  }
+  bool isWin = false;
 
   void initializeBoard() {
     for (int i = 0; i < 6; i++) {
@@ -60,7 +61,6 @@ class _GameScreenState extends State<GameScreen> {
   void checkForMatchesAndSwapBack() {
     bool matchesFound = false;
 
-    // Check for horizontal matches
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < 9; j++) {
         if (board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2]) {
@@ -97,7 +97,6 @@ class _GameScreenState extends State<GameScreen> {
       }
     }
 
-    // Check for vertical matches
     for (int j = 0; j < 11; j++) {
       for (int i = 0; i < 4; i++) {
         if (board[i][j] == board[i + 1][j] && board[i][j] == board[i + 2][j]) {
@@ -143,8 +142,10 @@ class _GameScreenState extends State<GameScreen> {
         case 'Normal':
           levelsRepository[2].isActive = true;
       }
-      ;
-      _showCompleteLevelDialog();
+      isWin = true;
+      Future.delayed(const Duration(seconds: 1), () {
+        context.router.push(WinRoute(level: widget.level));
+      });
     }
   }
 
@@ -156,10 +157,12 @@ class _GameScreenState extends State<GameScreen> {
     return DateTime.now().millisecondsSinceEpoch + timeLeft;
   }
 
+
   @override
   void dispose() {
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -213,82 +216,15 @@ class _GameScreenState extends State<GameScreen> {
                           SvgPicture.asset('assets/images/elements/timer.svg'),
                           SizedBox(width: 5),
                           CountdownTimer(
-                            endWidget: Center(
-                              child: Text(
-                                '00 : 00 : 00',
-                                style: TextStyle(
-                                    color: AppColors.ivory,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
                             textStyle: TextStyle(
                                 color: AppColors.ivory,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600),
                             endTime: endTime(),
                             onEnd: () {
-                              showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (BuildContext context) {
-                                    return Dialog(
-                                      backgroundColor: Colors.transparent,
-                                      shape:
-                                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-                                      child: Container(
-                                        height: 340,
-                                        width: 340,
-                                        decoration: BoxDecoration(
-                                          gradient: AppColors.gradientBackground,
-                                          border: Border.all(color: AppColors.lightBrown, width: 2),
-                                        ),
-                                        child: Center(
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Image.asset(widget.level.difficultyIcon,
-                                                  width: 200, opacity: AlwaysStoppedAnimation(.5)),
-                                              Text(
-                                                'Time left'.toUpperCase(),
-                                                style: TextStyle(
-                                                    color: AppColors.lightBrown,
-                                                    fontSize: 24,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontFamily: 'Roboto Serif'),
-                                              ),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  ActionButtonWidget(
-                                                      onTap: () {
-                                                        context.router.popAndPush(HomeRoute());
-                                                      },
-                                                      verticalPadding: 10,
-                                                      horizontalPadding: 12,
-                                                      text: 'Back to menu',
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w400),
-                                                  SizedBox(width: 10),
-                                                  ActionButtonWidget(
-                                                      onTap: () {
-                                                        context.router
-                                                            .popAndPush(GameRoute(level: widget.level));
-                                                      },
-                                                      verticalPadding: 10,
-                                                      horizontalPadding: 12,
-                                                      text: 'Try Again',
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w400),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              if (isWin == false) {
+                                context.router.push(TimeLeftRoute(level: widget.level));
+                              }
                             },
                           ),
                         ],
@@ -321,7 +257,8 @@ class _GameScreenState extends State<GameScreen> {
                       ),
                     ),
                     MenuButton(onTap: () {
-                      context.router.popAndPush(PauseRoute(level: widget.level));
+                      isWin = true;
+                      context.router.push(PauseRoute(level: widget.level));
                     }),
                   ],
                 ),
@@ -369,7 +306,7 @@ class _GameScreenState extends State<GameScreen> {
                                   color: Colors.transparent,
                                   border: Border.all(
                                       color: AppColors.lightBrown, width: 2),
-                                ), // Change color based on element type
+                                ),
                                 child: Center(
                                   child: Image.asset(
                                     board[i][j],
@@ -394,175 +331,4 @@ class _GameScreenState extends State<GameScreen> {
       ),
     );
   }
-
-  void _showCompleteLevelDialog() {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return Dialog(
-            backgroundColor: Colors.transparent,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-            child: Container(
-              height: 340,
-              width: 340,
-              decoration: BoxDecoration(
-                gradient: AppColors.gradientBackground,
-                border: Border.all(color: AppColors.lightBrown, width: 2),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.asset(widget.level.difficultyIcon, width: 150),
-                    Text(
-                      'Level complete'.toUpperCase(),
-                      style: TextStyle(
-                          color: AppColors.lightBrown,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: 'Roboto Serif'),
-                    ),
-                    Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'You’ve passed the ',
-                              style: TextStyle(
-                                color: AppColors.grey,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              '${widget.level.difficulty}',
-                              style: TextStyle(
-                                color: AppColors.ivory,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          'level difficulty level.',
-                          style: TextStyle(
-                            color: AppColors.grey,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ActionButtonWidget(
-                            onTap: () {
-                              context.router.popAndPush(HomeRoute());
-                            },
-                            verticalPadding: 10,
-                            horizontalPadding: 12,
-                            text: 'Back to menu',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                        SizedBox(width: 10),
-                        ActionButtonWidget(
-                            onTap: () {
-                              switch (widget.level.difficulty) {
-                                case 'Easy':
-                                  context.router.popAndPush(
-                                      GameRoute(level: levelsRepository[1]));
-                                case 'Normal':
-                                  context.router.popAndPush(
-                                      GameRoute(level: levelsRepository[2]));
-                                case 'Hard':
-                                  context.router.popAndPush(
-                                      GameRoute(level: levelsRepository[0]));
-                              }
-                            },
-                            verticalPadding: 10,
-                            horizontalPadding: 12,
-                            text: widget.level.difficulty == 'Hard'
-                                ? 'Start Over'
-                                : 'The next lvl difficulty',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        });
-  }
-
-  // void _showTimeLeftDialog() {
-  //   showDialog(
-  //       context: context,
-  //       barrierDismissible: false,
-  //       builder: (BuildContext context) {
-  //         return Dialog(
-  //           backgroundColor: Colors.transparent,
-  //           shape:
-  //               RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-  //           child: Container(
-  //             height: 340,
-  //             width: 340,
-  //             decoration: BoxDecoration(
-  //               gradient: AppColors.gradientBackground,
-  //               border: Border.all(color: AppColors.lightBrown, width: 2),
-  //             ),
-  //             child: Center(
-  //               child: Column(
-  //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //                 crossAxisAlignment: CrossAxisAlignment.center,
-  //                 children: [
-  //                   Image.asset(widget.level.difficultyIcon,
-  //                       width: 200, opacity: AlwaysStoppedAnimation(.5)),
-  //                   Text(
-  //                     'Time left'.toUpperCase(),
-  //                     style: TextStyle(
-  //                         color: AppColors.lightBrown,
-  //                         fontSize: 24,
-  //                         fontWeight: FontWeight.w400,
-  //                         fontFamily: 'Roboto Serif'),
-  //                   ),
-  //                   Row(
-  //                     mainAxisAlignment: MainAxisAlignment.center,
-  //                     children: [
-  //                       ActionButtonWidget(
-  //                           onTap: () {
-  //                             context.router.popAndPush(HomeRoute());
-  //                           },
-  //                           verticalPadding: 10,
-  //                           horizontalPadding: 12,
-  //                           text: 'Back to menu',
-  //                           fontSize: 16,
-  //                           fontWeight: FontWeight.w400),
-  //                       SizedBox(width: 10),
-  //                       ActionButtonWidget(
-  //                           onTap: () {
-  //                             context.router
-  //                                 .popAndPush(GameRoute(level: widget.level));
-  //                           },
-  //                           verticalPadding: 10,
-  //                           horizontalPadding: 12,
-  //                           text: 'Try Again',
-  //                           fontSize: 16,
-  //                           fontWeight: FontWeight.w400),
-  //                     ],
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         );
-  //       });
-  // }
 }

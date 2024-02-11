@@ -42,6 +42,10 @@ flutter:
 
   assets:
      - assets/images/
+     - assets/images/elements/
+     - assets/images/difficulty/
+     - assets/images/game/
+
 
   fonts:
     - family: Roboto
@@ -52,3 +56,6 @@ flutter:
         - asset: fonts/Roboto-BoldItalic.ttf
         - asset: fonts/Roboto-Black.ttf
         - asset: fonts/Roboto-BlackItalic.ttf
+    - family: Roboto Serif
+      fonts:
+        - asset: fonts/Roboto-Serif-Regular.ttf

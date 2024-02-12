@@ -6,7 +6,6 @@ import 'package:pharaohs_gold_app/theme/colors.dart';
 import 'package:pharaohs_gold_app/widgets/action_button_widget.dart';
 import 'package:pharaohs_gold_app/widgets/back_button_widget.dart';
 import 'package:pharaohs_gold_app/widgets/settings_button.dart';
-import 'package:pharaohs_gold_app/widgets/sound_button.dart';
 
 @RoutePage()
 class PauseScreen extends StatefulWidget {
@@ -76,13 +75,7 @@ class _PauseScreenState extends State<PauseScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        SoundButton(),
-                        SizedBox(width: 10),
-                        SettingsButton(),
-                      ],
-                    ),
+                    SettingsButton(),
                     SizedBox(width: 10),
                   ],
                 )

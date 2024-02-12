@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pharaohs_gold_app/models/level_model.dart';
@@ -27,12 +28,14 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     initializeBoard();
+
   }
 
   List<List<String>> board = List.generate(6, (i) => List.filled(11, ""));
 
   int selectedRow = -1;
   int selectedColumn = -1;
+
 
   List<String> elements = [
     'assets/images/game/blue-1.png',
@@ -49,9 +52,11 @@ class _GameScreenState extends State<GameScreen> {
 
   int coins = 0;
   bool isWin = false;
+  bool _isTap = false;
+
 
   void initializeBoard() {
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 11; j++) {
         board[i][j] = elements[Random().nextInt(4)];
       }
@@ -61,7 +66,8 @@ class _GameScreenState extends State<GameScreen> {
   void checkForMatchesAndSwapBack() {
     bool matchesFound = false;
 
-    for (int i = 0; i < 6; i++) {
+    _isTap = false;
+    for (int i = 0; i < 5; i++) {
       for (int j = 0; j < 9; j++) {
         if (board[i][j] == board[i][j + 1] && board[i][j] == board[i][j + 2]) {
           switch (board[i][j]) {
@@ -87,15 +93,19 @@ class _GameScreenState extends State<GameScreen> {
               coins += 500;
           }
           ;
-          board[i][j] = elements[Random().nextInt(4)];
-          board[i][j + 1] = elements[Random().nextInt(4)];
-          board[i][j + 2] = elements[Random().nextInt(4)];
+          board[i][j] = elements[Random().nextInt(10)];
+          board[i][j + 1] = elements[Random().nextInt(10)];
+          board[i][j + 2] = elements[Random().nextInt(10)];
           setState(() {});
           matchesFound = true;
+          selectedRow = -1;
+          selectedColumn = -1;
           checkWin();
         }
       }
     }
+
+
 
     for (int j = 0; j < 11; j++) {
       for (int i = 0; i < 4; i++) {
@@ -123,11 +133,13 @@ class _GameScreenState extends State<GameScreen> {
               coins += 500;
           }
           ;
-          board[i][j] = elements[Random().nextInt(4)];
-          board[i + 1][j] = elements[Random().nextInt(4)];
-          board[i + 2][j] = elements[Random().nextInt(4)];
+          board[i][j] = elements[Random().nextInt(10)];
+          board[i + 1][j] = elements[Random().nextInt(10)];
+          board[i + 2][j] = elements[Random().nextInt(10)];
           setState(() {});
           matchesFound = true;
+          selectedRow = -1;
+          selectedColumn = -1;
           checkWin();
         }
       }
@@ -273,23 +285,18 @@ class _GameScreenState extends State<GameScreen> {
                           return GestureDetector(
                             onTap: () {
                               setState(() {
+                                _isTap = true;
                                 if (selectedRow == -1 && selectedColumn == -1) {
                                   selectedRow = i;
                                   selectedColumn = j;
                                 } else {
-                                  if ((i == selectedRow &&
-                                          j == selectedColumn - 1) ||
-                                      (i == selectedRow &&
-                                          j == selectedColumn + 1) ||
-                                      (i == selectedRow - 1 &&
-                                          j == selectedColumn) ||
-                                      (i == selectedRow + 1 &&
-                                          j == selectedColumn)) {
+                                  if ((i == selectedRow && j == selectedColumn - 1) ||
+                                      (i == selectedRow && j == selectedColumn + 1) ||
+                                      (i == selectedRow - 1 && j == selectedColumn) ||
+                                      (i == selectedRow + 1 && j == selectedColumn)) {
                                     // Swap elements
-                                    String temp =
-                                        board[selectedRow][selectedColumn];
-                                    board[selectedRow][selectedColumn] =
-                                        board[i][j];
+                                    String temp = board[selectedRow][selectedColumn];
+                                    board[selectedRow][selectedColumn] = board[i][j];
                                     board[i][j] = temp;
                                     checkForMatchesAndSwapBack();
                                   } else {
@@ -301,7 +308,8 @@ class _GameScreenState extends State<GameScreen> {
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(4.0),
-                              child: Container(
+                              child: _isTap && i == selectedRow && j == selectedColumn ? AnimatedContainer(
+                                duration: Duration(milliseconds: 200),
                                 decoration: BoxDecoration(
                                   color: Colors.transparent,
                                   border: Border.all(
@@ -313,10 +321,25 @@ class _GameScreenState extends State<GameScreen> {
                                     width: 55,
                                   ),
                                 ),
-                                width: 55,
-                                height: 55,
-                              ),
-                            ),
+                                width: _isTap && i == selectedRow && j == selectedColumn ? 48 : 55,
+                                height: _isTap && i == selectedRow && j == selectedColumn ? 48 : 55,
+                              ).animate() : AnimatedContainer(
+                                duration: Duration(milliseconds: 200),
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  border: Border.all(
+                                      color: AppColors.lightBrown, width: 2),
+                                ),
+                                child: Center(
+                                  child: Image.asset(
+                                    board[i][j],
+                                    width: 55,
+                                  ),
+                                ),
+                                width: _isTap && i == selectedRow && j == selectedColumn ? 48 : 55,
+                                height: _isTap && i == selectedRow && j == selectedColumn ? 48 : 55,
+                              ).animate(),
+                            ).animate().fade(begin: 0.5).scale(delay: 500.ms),
                           );
                         }),
                       );

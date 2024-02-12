@@ -4,7 +4,6 @@ import 'package:pharaohs_gold_app/router/router.dart';
 import 'package:pharaohs_gold_app/theme/colors.dart';
 import 'package:pharaohs_gold_app/widgets/action_button_widget.dart';
 import 'package:pharaohs_gold_app/widgets/settings_button.dart';
-import 'package:pharaohs_gold_app/widgets/sound_button.dart';
 
 @RoutePage()
 class HomeScreen extends StatefulWidget {
@@ -44,13 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        SoundButton(),
-                        SizedBox(width: 10),
-                        SettingsButton(),
-                      ],
-                    ),
+                    SettingsButton(),
                     ActionButtonWidget(
                         onTap: () {
                           context.router.push(LevelsRoute());
@@ -60,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         text: 'Play',
                         fontSize: 20,
                         fontWeight: FontWeight.w700),
-                    SizedBox(width: 105),
+                    SizedBox(width: 50),
                   ],
                 )
               ],
